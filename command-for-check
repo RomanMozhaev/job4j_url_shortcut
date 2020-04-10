@@ -1,0 +1,16 @@
+Registration
+
+http POST http://localhost:8080/shortcut/registration site=job4j.ru
+
+login
+http POST http://localhost:8080/shortcut/login login=U1lmMMuAjd password=TmoZCDdBCg
+
+Statistic
+http GET http://localhost:8080/shortcut/statistic 'Authorization:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVMWxtTU11QWpkIiwiZXhwIjoxNTg4MTg2MjAxfQ.S0WwxQBz4S2YUbp3qNf4Xvv1XrV_QXmig89YnVsuEnIc13e6A13Aa2bUjW4m7YFIBaZit_lC8MaZhnXzL0jlGA'
+
+
+Convert
+http POST http://localhost:8080/shortcut/convert 'Authorization:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVMWxtTU11QWpkIiwiZXhwIjoxNTg4MTg2MjAxfQ.S0WwxQBz4S2YUbp3qNf4Xvv1XrV_QXmig89YnVsuEnIc13e6A13Aa2bUjW4m7YFIBaZit_lC8MaZhnXzL0jlGA' url=https://job4j.ru/TrackStudio/staticframeset.html#202318
+
+redirect
+http GET http://localhost:8080/shortcut/redirect/7AiTRPCzTt
