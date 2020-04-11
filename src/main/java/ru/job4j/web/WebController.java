@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.job4j.domain.WebSite;
+import ru.job4j.domain.Link;
 import ru.job4j.service.JsonCode;
 import ru.job4j.service.JsonRegistration;
 import ru.job4j.service.JsonUrl;
@@ -32,17 +33,8 @@ public class WebController {
     public @ResponseBody
     String registration(@RequestBody String jsonString) throws IOException {
         Map<String, String> fields = this.mapper.readValue(jsonString, Map.class);
-        String domain = this.service.checkWebSite(fields.get("site"));
-        boolean registration = false;
-        String login = "";
-        String password = "";
-        if (domain != null) {
-            login = this.service.getUniqueLogin();
-            password = this.service.getUniquePassword();
-            this.service.register(new WebSite(domain, login, password));
-            registration = true;
-        }
-        String resultJSON = this.mapper.writeValueAsString(new JsonRegistration(registration, login, password));
+        JsonRegistration jsonRegistration = this.service.register(fields.get("site"));
+        String resultJSON = this.mapper.writeValueAsString(jsonRegistration);
         return resultJSON;
     }
 
@@ -51,8 +43,11 @@ public class WebController {
     String convert(@RequestBody String jsonString) throws IOException {
         //TODO here we need somehow to detect after authorization what kind of
         // website is authorized and send it to service layer with url
+        ///TODO must be real
+        String domain = "job4j.ru";
         Map<String, String> fields = this.mapper.readValue(jsonString, Map.class);
-        String code = this.service.addLink(fields.get("url"));
+        String url = fields.get("url");
+        String code = this.service.addLink(new Link(url, new WebSite(domain)));
         String resultJSON = this.mapper.writeValueAsString(new JsonCode(code));
         return resultJSON;
     }
@@ -66,10 +61,12 @@ public class WebController {
     }
 
     @GetMapping(value = "/statistic", produces = "application/json")
-    public @ResponseBody String statistic() throws IOException {
+    public @ResponseBody
+    String statistic() throws IOException {
         //TODO somehow get the website which is authorized.
-
-        List<JsonUrl> list = this.service.getStatistic();
+        /// TODO must be real
+        String domain = "job4j.ru";
+        List<JsonUrl> list = this.service.getStatistic(domain);
         String resultJSON = this.mapper.writeValueAsString(list);
         return resultJSON;
     }

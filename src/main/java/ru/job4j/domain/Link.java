@@ -2,12 +2,9 @@ package ru.job4j.domain;
 
 import javax.persistence.*;
 
-//@Entity
-//@Table(name = "link")
+@Entity
+@Table(name = "link")
 public class Link {
-
-    public Link() {
-    }
 
     @Id
     private String url;
@@ -19,8 +16,17 @@ public class Link {
     private int count;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "domain", foreignKey = @ForeignKey(name = "domain"))
-    private WebSite website;
+    @JoinColumn(name = "website", foreignKey = @ForeignKey(name = "domain"))
+    private WebSite webSite;
+
+    public Link() {
+    }
+
+    public Link(String url, WebSite webSite) {
+        this.url = url;
+        this.webSite = webSite;
+        this.count = 0;
+    }
 
     public String getUrl() {
         return url;
@@ -44,5 +50,13 @@ public class Link {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public WebSite getWebSite() {
+        return webSite;
+    }
+
+    public void setWebSite(WebSite webSite) {
+        this.webSite = webSite;
     }
 }

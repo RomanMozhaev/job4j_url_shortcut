@@ -1,62 +1,100 @@
 package ru.job4j.service;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.job4j.domain.WebSite;
+import ru.job4j.domain.Link;
+import ru.job4j.repository.DataConnector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class ShortCutService {
 
-    public String checkWebSite(String website) {
+    private static final String URL_PATTERN = "^https?://[^/]+/([^/]+)/.*$";
+    private static final String DOMAIN_PATTERN = "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$";
 
-        //TODO here we need to check the website and remove all symbols
-        // if website is not correctly entered return null
-        // if website exists in the database, return null
-        // otherwise return website without additional symbols.
-        return website;
+    @Value("${error.default.url}")
+    private String defaultURL;
+
+
+    private final DataConnector dataConnector;
+
+    @Autowired
+    public ShortCutService(DataConnector dataConnector) {
+        this.dataConnector = dataConnector;
     }
 
-    public String getUniqueLogin() {
-        //TODO here we need to generate unique login and check that this login does
-        // not exist in the database
-        return "login";
+    private boolean checkDomainByPattern(String domain) {
+        return Pattern.matches(DOMAIN_PATTERN, domain);
     }
 
-    public String getUniquePassword() {
-        //TODO here we need to generate unique password.
-        return "password";
+    public boolean checkURLByPattern(String url, String domain) {
+        String domainPattern = ".*" + domain + ".*";
+        boolean e = Pattern.matches(URL_PATTERN, url);
+        boolean r = Pattern.matches(domainPattern, url);
+        return (Pattern.matches(URL_PATTERN, url) && Pattern.matches(domainPattern, url));
     }
 
-    public void register(WebSite site) {
-        //TODO here the website must be saved to date base
+    public JsonRegistration register(String domain) {
+        JsonRegistration jsonRegistration;
+        boolean registered = false;
+        String login = "";
+        String password = "";
+        if (checkDomainByPattern(domain)) {
+            login = RandomStringUtils.randomAlphanumeric(10);
+            password = RandomStringUtils.randomAlphanumeric(10);
+            WebSite newWebSite = new WebSite(domain, login, password);
+            registered = this.dataConnector.addDomain(newWebSite);
+        }
+        if (registered) {
+            jsonRegistration = new JsonRegistration(true, login, password);
+        } else {
+            jsonRegistration = new JsonRegistration(false, "", "");
+        }
+        return jsonRegistration;
+
     }
 
-    public String addLink(String link) {
-        //TODO here we need to check that link is owned of
-        // the current authorized website, otherwise return ""
-        // if the link exists in the database return existing code
-        // otherwise generate a unique code for this link and check that this code
-        // does not exist in the data base.
-        // add link and code to database.
-        return "specialCode";
+    public String addLink(Link link) {
+        String result = "";
+        String url = link.getUrl();
+        String domain = link.getWebSite().getDomain();
+        if (checkURLByPattern(url, domain)) {
+            String code = RandomStringUtils.randomAlphanumeric(10);
+            link.setCode(code);
+            result = this.dataConnector.addLink(link);
+        }
+        return result;
     }
 
     public String getLink(String code) {
-        //TODO find the link by code in the db.
-        // increment website calls.
-        // if link is not found return error page.
-        return "http://www.google.com";
+        String result;
+        Link link = this.dataConnector.findLinkByCode(code);
+        if (link == null) {
+            result = this.defaultURL;
+        } else {
+            result = link.getUrl();
+        }
+        return result;
     }
 
-    public List<JsonUrl> getStatistic() {
-        //TODO create the list where first must be common statistic of the website.
-        // and then statistic for each link
-        List<JsonUrl> list = new ArrayList<>();
-        list.add(new JsonUrl("job4j.ru", 100));
-        list.add(new JsonUrl("job4j.ru/rororo", 100));
-        return list;
+    public List<JsonUrl> getStatistic(String domain) {
+        List<JsonUrl> jsonUrlList = new ArrayList<>();
+        jsonUrlList.add(new JsonUrl(domain, 0));
+        int domainCount = 0;
+        List<Link> links = this.dataConnector.getLinks(new WebSite(domain));
+        for (Link link : links) {
+            int count = link.getCount();
+            domainCount += count;
+            jsonUrlList.add(new JsonUrl(link.getUrl(), count));
+        }
+        jsonUrlList.get(0).setTotal(domainCount);
+        return jsonUrlList;
     }
 
 }

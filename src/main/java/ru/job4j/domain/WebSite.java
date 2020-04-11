@@ -3,18 +3,9 @@ package ru.job4j.domain;
 import javax.persistence.*;
 import java.util.Set;
 
-//@Entity
-//@Table(name = "website")
+@Entity
+@Table(name = "domain")
 public class WebSite {
-
-    public WebSite() {
-    }
-
-    public WebSite(String domain, String login, String password) {
-        this.domain = domain;
-        this.login = login;
-        this.password = password;
-    }
 
     @Id
     private String domain;
@@ -22,11 +13,24 @@ public class WebSite {
     @Column(unique = true, nullable = false)
     private String login;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "website", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "webSite", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Link> links;
+
+    public WebSite() {
+    }
+
+    public WebSite(String domain) {
+        this.domain = domain;
+    }
+
+    public WebSite(String domain, String login, String password) {
+        this.domain = domain;
+        this.login = login;
+        this.password = password;
+    }
 
     public String getDomain() {
         return domain;
