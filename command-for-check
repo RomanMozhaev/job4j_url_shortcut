@@ -1,21 +1,16 @@
-I have used this command in HTTPie:
+Registration
 
-http -a client:secret --form POST http://localhost:8080/oauth/token username='admin' password='secret1' grant_type='password' scope='read write trust'
+http POST http://localhost:8080/shortcut/registration site=job4j.ru
 
-The response is:
+login
+http POST http://localhost:8080/shortcut/login login=U1lmMMuAjd password=TmoZCDdBCg
 
-HTTP/1.1 500
-Cache-Control: no-store
-Connection: close
-Content-Type: application/json
-Date: Fri, 10 Apr 2020 08:51:48 GMT
-Pragma: no-cache
-Transfer-Encoding: chunked
-X-Content-Type-Options: nosniff
-X-Frame-Options: DENY
-X-XSS-Protection: 1; mode=block
+Statistic
+http GET http://localhost:8080/shortcut/statistic 'Authorization:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVMWxtTU11QWpkIiwiZXhwIjoxNTg4MTg2MjAxfQ.S0WwxQBz4S2YUbp3qNf4Xvv1XrV_QXmig89YnVsuEnIc13e6A13Aa2bUjW4m7YFIBaZit_lC8MaZhnXzL0jlGA'
 
-{
-    "error": "server_error",
-    "error_description": "Internal Server Error"
-}
+
+Convert
+http POST http://localhost:8080/shortcut/convert 'Authorization:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJVMWxtTU11QWpkIiwiZXhwIjoxNTg4MTg2MjAxfQ.S0WwxQBz4S2YUbp3qNf4Xvv1XrV_QXmig89YnVsuEnIc13e6A13Aa2bUjW4m7YFIBaZit_lC8MaZhnXzL0jlGA' url=https://job4j.ru/TrackStudio/staticframeset.html#202318
+
+redirect
+http GET http://localhost:8080/shortcut/redirect/7AiTRPCzTt
