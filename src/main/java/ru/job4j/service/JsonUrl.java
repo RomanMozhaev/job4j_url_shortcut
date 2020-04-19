@@ -1,5 +1,9 @@
 package ru.job4j.service;
 
+/**
+ * the class for creating instances for creating json object for response,
+ * when the application returns the list of urls and counts of rediractions.
+ */
 public class JsonUrl {
 
     private String url;

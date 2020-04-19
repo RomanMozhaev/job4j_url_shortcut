@@ -6,14 +6,23 @@ import ru.job4j.domain.Link;
 import ru.job4j.domain.WebSite;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * the data base connection combiner.
+ */
 @Component
 public class DataConnector {
 
+    /**
+     * the web-site repository.
+     */
     private final WebSiteRepository webSiteRepository;
 
+    /**
+     * the link repository.
+     */
     private final LinkRepository linkRepository;
 
     @Autowired
@@ -23,11 +32,16 @@ public class DataConnector {
         this.linkRepository = linkRepository;
     }
 
+    /**
+     * it adds the website (domain and unique login and password) to the data base.
+     * @param webSite the website
+     * @return true, if the website was added; otherwise false.
+     */
     @Transactional
     public boolean addDomain(WebSite webSite) {
         boolean result = false;
-        WebSite dbSite = this.webSiteRepository.findByDomain(webSite.getDomain());
-        if (dbSite == null) {
+        Optional<WebSite> dbSite = this.webSiteRepository.findByDomain(webSite.getDomain());
+        if (dbSite.isEmpty()) {
             this.webSiteRepository.save(webSite);
             result = true;
         }
@@ -43,28 +57,44 @@ public class DataConnector {
     @Transactional
     public String addLink(Link link) {
         String code;
-        Link dbLink = this.linkRepository.findByUrl(link.getUrl());
-
-        if (dbLink == null) {
+        Optional<Link> dbLink = this.linkRepository.findByUrl(link.getUrl());
+        if (dbLink.isEmpty()) {
             Link savedLink = this.linkRepository.save(link);
             code = savedLink.getCode();
         } else {
-            code = dbLink.getCode();
+            code = dbLink.get().getCode();
         }
         return code;
     }
 
+    /**
+     * it returns the link which matches to the code.
+     * if the link exists in the data base and returns, the count is incremented.
+     * @param code the code.
+     * @return
+     */
     @Transactional
-    public Link findLinkByCode(String code) {
-        Link link = this.linkRepository.findByCode(code);
-        if (link != null) {
-            link.setCount(link.getCount() + 1);
-        }
+    public Optional<Link> findLinkByCode(String code) {
+        Optional<Link> link = this.linkRepository.findByCode(code);
+        link.ifPresent(value -> value.setCount(value.getCount() + 1));
         return link;
     }
 
+    /**
+     * it returns the list of links which relate to the website.
+     * @param site- the web site.
+     * @return the link list.
+     */
     public List<Link> getLinks(WebSite site) {
-        List<Link> links = this.linkRepository.findAllByWebSite(site);
-        return links;
+        return this.linkRepository.findAllByWebSite(site);
+    }
+
+    /**
+     * it return the domain name by login (username).
+     * @param username - the unique login of the web site.
+     * @return the domain.
+     */
+    public String getDomain(String username) {
+        return this.webSiteRepository.getDomainByLogin(username);
     }
 }

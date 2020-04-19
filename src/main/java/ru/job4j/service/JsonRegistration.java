@@ -1,5 +1,9 @@
 package ru.job4j.service;
 
+/**
+ * the class for creating instances for creating json object for response,
+ * when the application returns the login and password of the new registered domain.
+ */
 public class JsonRegistration {
 
     private boolean registration;

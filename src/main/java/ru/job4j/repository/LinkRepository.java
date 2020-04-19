@@ -6,13 +6,14 @@ import ru.job4j.domain.Link;
 import ru.job4j.domain.WebSite;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LinkRepository extends JpaRepository<Link, Integer> {
 
-    Link findByUrl(String url);
+    Optional<Link> findByUrl(String url);
 
-    Link findByCode(String code);
+    Optional<Link> findByCode(String code);
 
     List<Link> findAllByWebSite(WebSite site);
 

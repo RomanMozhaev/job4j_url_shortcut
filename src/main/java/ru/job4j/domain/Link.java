@@ -2,24 +2,42 @@ package ru.job4j.domain;
 
 import javax.persistence.*;
 
+/**
+ * the entity of the link.
+ */
 @Entity
-@Table(name = "link")
 public class Link {
 
+    /**
+     * the url for redirection.
+     */
     @Id
     private String url;
 
+    /**
+     * the unique code which is matched to the url.
+     */
     @Column(unique = true, nullable = false)
     private String code;
 
+    /**
+     * the count of redirections.
+     */
     @Column(nullable = false)
     private int count;
 
+    /**
+     * the website-owner of the link.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "website", foreignKey = @ForeignKey(name = "domain"))
     private WebSite webSite;
 
     public Link() {
+    }
+
+    public Link(String url) {
+        this.url = url;
     }
 
     public Link(String url, WebSite webSite) {
