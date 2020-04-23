@@ -4,7 +4,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.domain.WebSite;
@@ -57,6 +56,7 @@ public class ShortCutService {
 
     /**
      * it checks the domain passes to the pattern or not.
+     *
      * @param domain -the domain
      * @return true, if passed; otherwise false.
      */
@@ -66,7 +66,8 @@ public class ShortCutService {
 
     /**
      * it checks the url passes to the patterns or not.
-     * @param url - the url
+     *
+     * @param url    - the url
      * @param domain - the domain
      * @return true, if passed; otherwise false.
      */
@@ -77,6 +78,7 @@ public class ShortCutService {
 
     /**
      * it registers the new site.
+     *
      * @param site - the new web site.
      * @return the object for creating the json response with login and password.
      */
@@ -103,6 +105,7 @@ public class ShortCutService {
 
     /**
      * it adds the link.
+     *
      * @param link the link.
      * @return the object for creating the json response with the unique code.
      */
@@ -122,6 +125,7 @@ public class ShortCutService {
 
     /**
      * it returns the link which matches to the code.
+     *
      * @param code the code.
      * @return the link for redirection.
      */
@@ -139,6 +143,7 @@ public class ShortCutService {
     /**
      * it returns the list with all urls and counts of redirections
      * for the authorized web-site.
+     *
      * @return the list of objects for creating the json response.
      */
     public List<JsonUrl> getStatistic() {
@@ -158,12 +163,12 @@ public class ShortCutService {
 
     /**
      * it returns the domain which is corresponded to the login/username.
+     *
      * @return the domain.
      */
     private String getDomain() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder
+        WebSite userDetails = (WebSite) SecurityContextHolder
                 .getContext().getAuthentication().getPrincipal();
-        return this.dataConnector.getDomain(userDetails.getUsername());
+        return userDetails.getDomain();
     }
-
 }

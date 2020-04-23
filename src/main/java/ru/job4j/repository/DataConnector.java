@@ -88,13 +88,4 @@ public class DataConnector {
     public List<Link> getLinks(WebSite site) {
         return this.linkRepository.findAllByWebSite(site);
     }
-
-    /**
-     * it return the domain name by login (username).
-     * @param username - the unique login of the web site.
-     * @return the domain.
-     */
-    public String getDomain(String username) {
-        return this.webSiteRepository.getDomainByLogin(username);
-    }
 }
