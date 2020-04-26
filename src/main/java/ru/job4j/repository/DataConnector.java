@@ -34,6 +34,7 @@ public class DataConnector {
 
     /**
      * it adds the website (domain and unique login and password) to the data base.
+     *
      * @param webSite the website
      * @return true, if the website was added; otherwise false.
      */
@@ -51,6 +52,7 @@ public class DataConnector {
     /**
      * It saves the new link and returns the code.
      * If link already exists, the method returns the code of already saved link.
+     *
      * @param link - the new link
      * @return - the unique code;
      */
@@ -70,18 +72,20 @@ public class DataConnector {
     /**
      * it returns the link which matches to the code.
      * if the link exists in the data base and returns, the count is incremented.
+     *
      * @param code the code.
      * @return
      */
     @Transactional
     public Optional<Link> findLinkByCode(String code) {
         Optional<Link> link = this.linkRepository.findByCode(code);
-        link.ifPresent(value -> value.setCount(value.getCount() + 1));
+        link.ifPresent(value -> this.linkRepository.countIncrement(value.getUrl()));
         return link;
     }
 
     /**
      * it returns the list of links which relate to the website.
+     *
      * @param site- the web site.
      * @return the link list.
      */
