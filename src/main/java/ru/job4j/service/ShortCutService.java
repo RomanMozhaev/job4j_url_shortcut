@@ -57,7 +57,7 @@ public class ShortCutService {
     /**
      * it checks the domain passes to the pattern or not.
      *
-     * @param domain -the domain
+     * @param domain - the domain.
      * @return true, if passed; otherwise false.
      */
     private boolean checkDomainByPattern(String domain) {
@@ -67,8 +67,8 @@ public class ShortCutService {
     /**
      * it checks the url passes to the patterns or not.
      *
-     * @param url    - the url
-     * @param domain - the domain
+     * @param url    - the url.
+     * @param domain - the domain.
      * @return true, if passed; otherwise false.
      */
     public boolean checkURLByPattern(String url, String domain) {
@@ -83,24 +83,24 @@ public class ShortCutService {
      * @return the object for creating the json response with login and password.
      */
     public JsonRegistration register(JsonSite site) {
-        JsonRegistration result;
+        JsonRegistration error = new JsonRegistration(false, "", "");
         String domain = site.getSite();
+        if (!checkDomainByPattern(domain)) {
+            return error;
+        }
+        String login = RandomStringUtils.randomAlphanumeric(10);
+        String password = RandomStringUtils.randomAlphanumeric(10);
+        String encodedPassword = encoder.encode(password);
+        WebSite newWebSite = new WebSite(domain, login, encodedPassword);
         boolean registered = false;
-        String login = "";
-        String password = "";
-        if (checkDomainByPattern(domain)) {
-            login = RandomStringUtils.randomAlphanumeric(10);
-            password = RandomStringUtils.randomAlphanumeric(10);
-            String encodedPassword = encoder.encode(password);
-            WebSite newWebSite = new WebSite(domain, login, encodedPassword);
+        try {
             registered = this.dataConnector.addDomain(newWebSite);
+        } catch (Exception ignored) {
         }
-        if (registered) {
-            result = new JsonRegistration(true, login, password);
-        } else {
-            result = new JsonRegistration(false, "", "");
+        if (!registered) {
+            return error;
         }
-        return result;
+        return new JsonRegistration(true, login, password);
     }
 
     /**
@@ -113,12 +113,16 @@ public class ShortCutService {
         JsonCode jsonCode = new JsonCode("");
         String url = link.getUrl();
         String domain = getDomain();
-        if (checkURLByPattern(url, domain)) {
-            String code = RandomStringUtils.randomAlphanumeric(10);
-            link.setCode(code);
-            link.setWebSite(new WebSite(domain));
+        if (!checkURLByPattern(url, domain)) {
+            return jsonCode;
+        }
+        String code = RandomStringUtils.randomAlphanumeric(10);
+        link.setCode(code);
+        link.setWebSite(new WebSite(domain));
+        try {
             String result = this.dataConnector.addLink(link);
             jsonCode.setCode(result);
+        } catch (Exception ignored) {
         }
         return jsonCode;
     }
@@ -130,14 +134,11 @@ public class ShortCutService {
      * @return the link for redirection.
      */
     public String getLink(String code) {
-        String result;
         Optional<Link> link = this.dataConnector.findLinkByCode(code);
         if (link.isEmpty()) {
-            result = this.defaultURL;
-        } else {
-            result = link.get().getUrl();
+            return this.defaultURL;
         }
-        return result;
+        return link.get().getUrl();
     }
 
     /**

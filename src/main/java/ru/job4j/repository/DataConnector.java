@@ -40,13 +40,14 @@ public class DataConnector {
      */
     @Transactional
     public boolean addDomain(WebSite webSite) {
-        boolean result = false;
         Optional<WebSite> dbSite = this.webSiteRepository.findByDomain(webSite.getDomain());
-        if (dbSite.isEmpty()) {
-            this.webSiteRepository.save(webSite);
-            result = true;
+        if (dbSite.isPresent()) {
+            return false;
         }
-        return result;
+        this.webSiteRepository.persist(webSite.getDomain(),
+                webSite.getLogin(),
+                webSite.getPassword());
+        return true;
     }
 
     /**
@@ -58,15 +59,15 @@ public class DataConnector {
      */
     @Transactional
     public String addLink(Link link) {
-        String code;
         Optional<Link> dbLink = this.linkRepository.findByUrl(link.getUrl());
-        if (dbLink.isEmpty()) {
-            Link savedLink = this.linkRepository.save(link);
-            code = savedLink.getCode();
-        } else {
-            code = dbLink.get().getCode();
+        if (dbLink.isPresent()) {
+            return dbLink.get().getCode();
         }
-        return code;
+        this.linkRepository.persist(link.getUrl(),
+                link.getCode(),
+                link.getCount(),
+                link.getWebSite().getDomain());
+        return link.getCode();
     }
 
     /**
@@ -74,7 +75,7 @@ public class DataConnector {
      * if the link exists in the data base and returns, the count is incremented.
      *
      * @param code the code.
-     * @return
+     * @return - Optional
      */
     @Transactional
     public Optional<Link> findLinkByCode(String code) {

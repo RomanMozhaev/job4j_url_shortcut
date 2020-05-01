@@ -24,4 +24,11 @@ public interface LinkRepository extends JpaRepository<Link, Integer> {
     @Query(value = "update Link as l set l.count = (l.count + 1) where l.url = :url")
     void countIncrement(@Param("url") String url);
 
+    @Modifying
+    @Query (value = "insert into link values (:url, :code, :count, :website)", nativeQuery = true)
+    void persist(@Param("url") String url,
+                 @Param("code") String code,
+                 @Param("count") int count,
+                 @Param("website") String website);
+
 }
