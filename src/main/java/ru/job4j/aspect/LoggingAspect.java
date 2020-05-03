@@ -24,18 +24,18 @@ public class LoggingAspect {
     /**
      * Pointcut that matches all repositories, services and Web REST endpoints.
      */
-    @Pointcut("within(@org.springframework.stereotype.Repository *)" +
-            " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)")
+    @Pointcut("within(@org.springframework.stereotype.Repository *)"
+            + " || within(@org.springframework.stereotype.Service *)"
+            + " || within(@org.springframework.web.bind.annotation.RestController *)")
     public void springBeanPointcut() {
     }
 
     /**
      * Pointcut that matches all Spring beans in the application's main packages.
      */
-    @Pointcut("within(ru.job4j..*)" +
-            " || within(ru.job4j.service..*)" +
-            " || within(ru.job4j.controller..*)")
+    @Pointcut("within(ru.job4j..*)"
+            + " || within(ru.job4j.service..*)"
+            + " || within(ru.job4j.controller..*)")
     public void applicationPackagePointcut() {
     }
 
